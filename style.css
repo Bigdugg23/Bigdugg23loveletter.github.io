@@ -218,7 +218,7 @@ body, html {
     gap: 20px;
     font-size: 4rem;
     margin-bottom: 40px;
-    transition: transform 1.5s ease;
+    transition: transform 1.5s ease, opacity 1.5s ease;
 }
 
 .flower {
@@ -243,7 +243,7 @@ body, html {
     font-size: 2rem;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, opacity 0.8s ease;
 }
 
 .ribbon:hover {
@@ -286,7 +286,7 @@ body, html {
     align-items: center;
     box-shadow: 0 4px 8px rgba(0,0,0,0.4);
     z-index: 5;
-    transition: transform 0.5s ease;
+    transition: transform 0.5s ease, opacity 0.5s ease;
 }
 
 .wax-seal .initials {
@@ -301,7 +301,7 @@ body, html {
 }
 
 /* ==========================================================================
-   5. LOVE LETTER SCENE
+   5. LOVE LETTER SCENE (PARCHMENT LINED TEXTURE)
    ========================================================================== */
 #letter-scene {
     background-color: var(--deep-burgundy);
@@ -311,6 +311,11 @@ body, html {
 
 .letter-paper {
     background: var(--cream);
+    background-image: repeating-linear-gradient(
+        var(--cream) 0px, 
+        var(--cream) 29px, 
+        #e5d8d0 30px
+    );
     color: var(--text-dark);
     width: 90%;
     max-width: 650px;
@@ -327,6 +332,7 @@ body, html {
     color: var(--burgundy);
     margin-bottom: 30px;
     text-align: center;
+    line-height: 1.2;
     border-bottom: 1px solid var(--rose-pink);
     padding-bottom: 15px;
 }
