@@ -1,1 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Letter for Someone Who Changed My World</title>
 
+    <!-- Google Fonts for Luxury & Vintage Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Floating Background Particles Container -->
+    <div id="particle-container"></div>
+
+    <!-- Music Toggle -->
+    <button id="music-toggle" aria-label="Toggle Ambient Music">
+        <span id="music-icon">🎵</span>
+    </button>
+    <!-- Background Audio (Replace source with your music file or keep ambient piano link) -->
+    <audio id="bg-music" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=soft-piano-100-bpm-121529.mp3"></audio>
+
+    <!-- 1. COVER PAGE -->
+    <section id="cover-scene" class="scene active">
+        <div class="cover-card">
+            <h1 class="handwritten-title">A Letter for Someone Who Changed My World</h1>
+            <p class="subtitle">Only one person knows the password.</p>
+            
+            <form id="password-form" onsubmit="return false;">
+                <input type="password" id="password-input" placeholder="Enter the secret word..." autocomplete="off">
+                <button type="submit" id="unlock-btn">Unlock 🌹</button>
+            </form>
+            <p id="error-message" class="error-msg"></p>
+        </div>
+    </section>
+
+    <!-- 2. WELCOME SCENE -->
+    <section id="welcome-scene" class="scene">
+        <div class="typewriter-container">
+            <p id="welcome-text"></p>
+        </div>
+    </section>
+
+    <!-- 3. FLOWER GARDEN SCENE -->
+    <section id="garden-scene" class="scene">
+        <div class="garden-container">
+            <div class="flowers-wrapper">
+                <div class="flower rose">🌹</div>
+                <div class="flower tulip">🌷</div>
+                <div class="flower babys-breath">🤍</div>
+                <div class="flower daisy">🌼</div>
+            </div>
+            <div id="ribbon" class="ribbon">
+                <span>For my Mama Mhlungu</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. ENVELOPE SCENE -->
+    <section id="envelope-scene" class="scene">
+        <div class="envelope-wrapper">
+            <div class="envelope" id="envelope">
+                <div class="front flap"></div>
+                <div class="front pocket"></div>
+                <div class="wax-seal" id="wax-seal">
+                    <span class="initials">MS</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. LOVE LETTER SCENE -->
+    <section id="letter-scene" class="scene">
+        <div class="letter-paper" id="letter-paper">
+            <h2 class="letter-title">To My Mama Mhlungu, My Momo Smiles</h2>
+            
+            <div class="letter-content" id="letter-content">
+                <!-- Sentences injected dynamically via script.js -->
+            </div>
+
+            <div class="signature-section">
+                <p>Yours,</p>
+                <div class="signature-line">
+                    Bigduggmustfall <span id="easter-egg-heart" class="interactive-heart">❤️</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. ENDING NIGHT SKY SCENE -->
+    <section id="ending-scene" class="scene">
+        <div class="ending-content">
+            <p id="ps-text" class="ps-message"></p>
+        </div>
+    </section>
+
+    <!-- 7. SECRET EASTER EGG MODAL -->
+    <div id="polaroid-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <div class="polaroid-frame">
+                <!-- Replace 'assets/photo.jpg' with her photo or keep placeholder -->
+                <div class="photo-placeholder">
+                    <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop" alt="Momo Smiles" id="polaroid-img">
+                </div>
+                <p class="polaroid-caption">"Every smile you've ever given me is still living rent-free in my heart. Thank you for being my Momo Smiles."</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
