@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A Letter for Someone Who Changed My World</title>
 
-    <!-- Google Fonts for Luxury & Vintage Typography -->
+    <!-- Google Fonts for Handwriting & Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Dancing+Script:wght@500;600;700&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
 </head>
@@ -73,21 +73,51 @@
         </div>
     </section>
 
-    <!-- 5. LOVE LETTER SCENE -->
+    <!-- 5. LOVE LETTER SCENE (MATCHING YOUR IMAGE) -->
     <section id="letter-scene" class="scene">
-        <div class="letter-paper" id="letter-paper">
-            <h2 class="letter-title">To my Mama Mhlungu,<br>my Momo Smiles,</h2>
+        <div class="scrapbook-container">
+            <!-- Heart tape border right -->
+            <div class="heart-border-right"></div>
             
-            <div class="letter-content" id="letter-content">
-                <!-- Sentences injected dynamically via script.js -->
+            <!-- Stamp Top Left -->
+            <div class="stamp-badge">
+                <div class="stamp-inner">🌸</div>
             </div>
 
-            <div class="signature-section">
-                <p>Yours,</p>
-                <div class="signature-line">
-                    Bigduggmustfall <span id="easter-egg-heart" class="interactive-heart">❤️</span>
+            <!-- Red Envelope Accent Top -->
+            <div class="mini-envelope-badge">❤️</div>
+
+            <!-- Sketch Heart Top Right -->
+            <div class="sketched-heart">
+                <svg viewBox="0 0 100 100" class="heart-svg">
+                    <path d="M50 88 C20 60 5 40 15 20 C25 5 45 10 50 25 C55 10 75 5 85 20 C95 40 80 60 50 88 Z" fill="none" stroke="#7a141a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+
+            <!-- Dried Rose Over Left Edge -->
+            <div class="dried-rose-overlay">🥀</div>
+
+            <!-- Main Lined Letter Paper -->
+            <div class="letter-paper" id="letter-paper">
+                <div class="letter-header-handwritten">
+                    To my Mama Mhlungu,<br>
+                    my Momo Smiles,
+                </div>
+                
+                <div class="letter-content" id="letter-content">
+                    <!-- Sentences injected dynamically via script.js -->
+                </div>
+
+                <div class="signature-section">
+                    <p class="yours-text">Yours,</p>
+                    <div class="signature-line">
+                        Bigduggmustfall <span id="easter-egg-heart" class="interactive-heart">♡</span>
+                    </div>
                 </div>
             </div>
+
+            <!-- Red Binder Clip Bottom Right -->
+            <div class="binder-clip">📎</div>
         </div>
     </section>
 
