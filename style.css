@@ -1,0 +1,469 @@
+/* ==========================================================================
+   THEME COLORS & VARIABLES
+   ========================================================================== */
+:root {
+    --burgundy: #4A0E17;
+    --deep-burgundy: #2B070C;
+    --rose-pink: #E8C5C8;
+    --cream: #FDFBF7;
+    --gold: #D4AF37;
+    --gold-light: #F3E5AB;
+    --text-dark: #332224;
+    
+    --font-heading: 'Alex Brush', cursive;
+    --font-body: 'Cormorant Garamond', serif;
+    --font-sans: 'Montserrat', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--deep-burgundy);
+    font-family: var(--font-body);
+    color: var(--cream);
+}
+
+/* ==========================================================================
+   PARTICLES & BACKGROUNDS
+   ========================================================================== */
+#particle-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.falling-item {
+    position: absolute;
+    top: -10%;
+    user-select: none;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+}
+
+/* Music Control */
+#music-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background: rgba(74, 14, 23, 0.6);
+    border: 1px solid var(--gold);
+    color: var(--cream);
+    padding: 10px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+#music-toggle:hover {
+    background: var(--burgundy);
+    transform: scale(1.05);
+}
+
+/* ==========================================================================
+   SCENE MANAGEMENT
+   ========================================================================== */
+.scene {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 2s ease-in-out, visibility 2s ease-in-out;
+    z-index: 1;
+}
+
+.scene.active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 10;
+}
+
+/* ==========================================================================
+   1. COVER SCENE
+   ========================================================================== */
+#cover-scene {
+    background: radial-gradient(circle, var(--burgundy) 0%, var(--deep-burgundy) 100%);
+    text-align: center;
+}
+
+.cover-card {
+    padding: 40px 20px;
+    max-width: 500px;
+    width: 90%;
+}
+
+.handwritten-title {
+    font-family: var(--font-heading);
+    font-size: 3.2rem;
+    color: var(--rose-pink);
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: var(--cream);
+    margin-bottom: 30px;
+    font-style: italic;
+}
+
+#password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+#password-input {
+    width: 80%;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: 1px solid var(--gold);
+    background: rgba(253, 251, 247, 0.1);
+    color: var(--cream);
+    font-family: var(--font-sans);
+    text-align: center;
+    outline: none;
+    font-size: 1rem;
+}
+
+#password-input::placeholder {
+    color: rgba(253, 251, 247, 0.5);
+}
+
+#unlock-btn {
+    padding: 10px 30px;
+    border-radius: 25px;
+    border: none;
+    background: var(--gold);
+    color: var(--deep-burgundy);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+#unlock-btn:hover {
+    background: var(--gold-light);
+    transform: scale(1.05);
+}
+
+.error-msg {
+    margin-top: 15px;
+    color: var(--rose-pink);
+    font-size: 0.9rem;
+    height: 20px;
+}
+
+.shake {
+    animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
+}
+
+/* ==========================================================================
+   2. WELCOME SCENE
+   ========================================================================== */
+#welcome-scene {
+    background-color: var(--cream);
+    color: var(--text-dark);
+}
+
+.typewriter-container {
+    font-size: 2rem;
+    font-style: italic;
+    text-align: center;
+    padding: 0 20px;
+}
+
+/* ==========================================================================
+   3. FLOWER GARDEN SCENE
+   ========================================================================== */
+#garden-scene {
+    background: linear-gradient(180deg, #1c2b1d 0%, #0d170e 100%);
+    flex-direction: column;
+}
+
+.garden-container {
+    text-align: center;
+}
+
+.flowers-wrapper {
+    display: flex;
+    gap: 20px;
+    font-size: 4rem;
+    margin-bottom: 40px;
+    transition: transform 1.5s ease;
+}
+
+.flower {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 1s ease;
+}
+
+.flower.bloom {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.ribbon {
+    display: inline-block;
+    background: var(--burgundy);
+    color: var(--gold-light);
+    padding: 12px 35px;
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+}
+
+.ribbon:hover {
+    transform: scale(1.1);
+}
+
+/* ==========================================================================
+   4. ENVELOPE SCENE
+   ========================================================================== */
+#envelope-scene {
+    background-color: #120305;
+}
+
+.envelope-wrapper {
+    perspective: 1000px;
+}
+
+.envelope {
+    width: 300px;
+    height: 200px;
+    background: var(--cream);
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    cursor: pointer;
+}
+
+.wax-seal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: var(--burgundy);
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    z-index: 5;
+    transition: transform 0.5s ease;
+}
+
+.wax-seal .initials {
+    font-family: var(--font-heading);
+    color: var(--gold);
+    font-size: 1.8rem;
+}
+
+.wax-seal.crack {
+    transform: translate(-50%, -50%) scale(1.3);
+    opacity: 0;
+}
+
+/* ==========================================================================
+   5. LOVE LETTER SCENE
+   ========================================================================== */
+#letter-scene {
+    background-color: var(--deep-burgundy);
+    overflow-y: auto;
+    padding: 40px 0;
+}
+
+.letter-paper {
+    background: var(--cream);
+    color: var(--text-dark);
+    width: 90%;
+    max-width: 650px;
+    padding: 50px 40px;
+    border-radius: 4px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    position: relative;
+    transition: transform 1.5s ease, opacity 1.5s ease;
+}
+
+.letter-title {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    color: var(--burgundy);
+    margin-bottom: 30px;
+    text-align: center;
+    border-bottom: 1px solid var(--rose-pink);
+    padding-bottom: 15px;
+}
+
+.letter-content {
+    font-size: 1.35rem;
+    line-height: 1.8;
+}
+
+.letter-line {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 1s ease, transform 1s ease;
+    margin-bottom: 18px;
+}
+
+.letter-line.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.signature-section {
+    margin-top: 40px;
+    text-align: right;
+    font-size: 1.4rem;
+}
+
+.signature-line {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    color: var(--burgundy);
+    margin-top: 5px;
+}
+
+.interactive-heart {
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+.interactive-heart:hover {
+    transform: scale(1.3);
+}
+
+.blush-glow {
+    box-shadow: 0 0 50px rgba(232, 197, 200, 0.8);
+}
+
+/* ==========================================================================
+   6. ENDING NIGHT SKY SCENE
+   ========================================================================== */
+#ending-scene {
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+}
+
+.ps-message {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    color: var(--gold-light);
+    text-align: center;
+    padding: 0 20px;
+    opacity: 0;
+    transition: opacity 2s ease;
+}
+
+.ps-message.visible {
+    opacity: 1;
+}
+
+/* ==========================================================================
+   7. EASTER EGG MODAL
+   ========================================================================== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-content {
+    position: relative;
+    max-width: 400px;
+    width: 90%;
+}
+
+.polaroid-frame {
+    background: #fff;
+    padding: 15px 15px 25px 15px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    transform: rotate(-2deg);
+    text-align: center;
+}
+
+.photo-placeholder img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+}
+
+.polaroid-caption {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    color: var(--text-dark);
+    margin-top: 15px;
+    line-height: 1.2;
+}
+
+.close-modal {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 600px) {
+    .handwritten-title { font-size: 2.4rem; }
+    .letter-paper { padding: 30px 20px; }
+    .letter-title { font-size: 2.2rem; }
+    .letter-content { font-size: 1.15rem; }
+    .ps-message { font-size: 1.8rem; }
+}
