@@ -1,17 +1,14 @@
 /* ==========================================================================
-   THEME COLORS & VARIABLES
+   THEME COLORS & FONTS
    ========================================================================== */
 :root {
-    --burgundy: #4A0E17;
-    --deep-burgundy: #2B070C;
-    --rose-pink: #E8C5C8;
-    --cream: #FDFBF7;
-    --gold: #D4AF37;
-    --gold-light: #F3E5AB;
-    --text-dark: #332224;
+    --bg-red: #730d19;
+    --deep-burgundy: #42040c;
+    --ink-color: #580d17;
+    --paper-bg: #f4eee3;
+    --paper-line: #d1c7b7;
     
-    --font-heading: 'Alex Brush', cursive;
-    --font-body: 'Cormorant Garamond', serif;
+    --font-handwriting: 'Dancing Script', 'Alex Brush', cursive;
     --font-sans: 'Montserrat', sans-serif;
 }
 
@@ -25,14 +22,12 @@ body, html {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background-color: var(--deep-burgundy);
-    font-family: var(--font-body);
-    color: var(--cream);
+    background-color: var(--bg-red);
+    font-family: var(--font-handwriting);
+    color: var(--ink-color);
 }
 
-/* ==========================================================================
-   PARTICLES & BACKGROUNDS
-   ========================================================================== */
+/* Floating Particles */
 #particle-container {
     position: fixed;
     top: 0;
@@ -55,25 +50,19 @@ body, html {
     100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
 }
 
-/* Music Control */
+/* Audio Control Button */
 #music-toggle {
     position: fixed;
     top: 20px;
     right: 20px;
     z-index: 100;
-    background: rgba(74, 14, 23, 0.6);
-    border: 1px solid var(--gold);
-    color: var(--cream);
+    background: rgba(66, 4, 12, 0.7);
+    border: 1px solid #d4af37;
+    color: #fff;
     padding: 10px 15px;
     border-radius: 50px;
     cursor: pointer;
     backdrop-filter: blur(5px);
-    transition: all 0.3s ease;
-}
-
-#music-toggle:hover {
-    background: var(--burgundy);
-    transform: scale(1.05);
 }
 
 /* ==========================================================================
@@ -90,7 +79,7 @@ body, html {
     align-items: center;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 2s ease-in-out, visibility 2s ease-in-out;
+    transition: opacity 1.5s ease, visibility 1.5s ease;
     z-index: 1;
 }
 
@@ -100,117 +89,76 @@ body, html {
     z-index: 10;
 }
 
-/* ==========================================================================
-   1. COVER SCENE
-   ========================================================================== */
+/* Cover Scene */
 #cover-scene {
-    background: radial-gradient(circle, var(--burgundy) 0%, var(--deep-burgundy) 100%);
+    background: radial-gradient(circle, #80121e 0%, #3b0209 100%);
     text-align: center;
+    color: #f4eee3;
 }
 
 .cover-card {
     padding: 40px 20px;
     max-width: 500px;
-    width: 90%;
 }
 
 .handwritten-title {
-    font-family: var(--font-heading);
-    font-size: 3.2rem;
-    color: var(--rose-pink);
+    font-size: 3.5rem;
+    color: #fce4e6;
     margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .subtitle {
-    font-size: 1.2rem;
-    color: var(--cream);
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: #e5b3b8;
     margin-bottom: 30px;
-    font-style: italic;
-}
-
-#password-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
 }
 
 #password-input {
     width: 80%;
     padding: 12px 20px;
     border-radius: 25px;
-    border: 1px solid var(--gold);
-    background: rgba(253, 251, 247, 0.1);
-    color: var(--cream);
+    border: 1px solid #d4af37;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
     font-family: var(--font-sans);
     text-align: center;
     outline: none;
-    font-size: 1rem;
-}
-
-#password-input::placeholder {
-    color: rgba(253, 251, 247, 0.5);
 }
 
 #unlock-btn {
+    margin-top: 15px;
     padding: 10px 30px;
     border-radius: 25px;
     border: none;
-    background: var(--gold);
-    color: var(--deep-burgundy);
+    background: #d4af37;
+    color: #3b0209;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s ease, background 0.2s ease;
-}
-
-#unlock-btn:hover {
-    background: var(--gold-light);
-    transform: scale(1.05);
 }
 
 .error-msg {
+    font-family: var(--font-sans);
     margin-top: 15px;
-    color: var(--rose-pink);
-    font-size: 0.9rem;
-    height: 20px;
+    color: #fce4e6;
+    font-size: 0.85rem;
 }
 
-.shake {
-    animation: shake 0.4s ease-in-out;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-10px); }
-    40%, 80% { transform: translateX(10px); }
-}
-
-/* ==========================================================================
-   2. WELCOME SCENE
-   ========================================================================== */
+/* Welcome Scene */
 #welcome-scene {
-    background-color: var(--cream);
-    color: var(--text-dark);
+    background-color: var(--paper-bg);
+    color: var(--ink-color);
 }
 
 .typewriter-container {
-    font-size: 2rem;
-    font-style: italic;
+    font-size: 2.8rem;
     text-align: center;
     padding: 0 20px;
 }
 
-/* ==========================================================================
-   3. FLOWER GARDEN SCENE
-   ========================================================================== */
+/* Garden Scene */
 #garden-scene {
     background: linear-gradient(180deg, #1c2b1d 0%, #0d170e 100%);
-    flex-direction: column;
-}
-
-.garden-container {
-    text-align: center;
 }
 
 .flowers-wrapper {
@@ -218,7 +166,6 @@ body, html {
     gap: 20px;
     font-size: 4rem;
     margin-bottom: 40px;
-    transition: transform 1.5s ease, opacity 1.5s ease;
 }
 
 .flower {
@@ -227,126 +174,98 @@ body, html {
     transition: all 1s ease;
 }
 
-.flower.bloom {
-    opacity: 1;
-    transform: translateY(0);
-}
+.flower.bloom { opacity: 1; transform: translateY(0); }
 
 .ribbon {
-    display: inline-block;
-    background: var(--burgundy);
-    color: var(--gold-light);
+    background: var(--ink-color);
+    color: #f4eee3;
     padding: 12px 35px;
-    border: 1px solid var(--gold);
-    border-radius: 4px;
-    font-family: var(--font-heading);
-    font-size: 2rem;
+    border: 1px solid #d4af37;
+    font-size: 2.2rem;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    transition: transform 0.3s ease, opacity 0.8s ease;
 }
 
-.ribbon:hover {
-    transform: scale(1.1);
-}
-
-/* ==========================================================================
-   4. ENVELOPE SCENE
-   ========================================================================== */
-#envelope-scene {
-    background-color: #120305;
-}
-
-.envelope-wrapper {
-    perspective: 1000px;
-}
-
+/* Envelope Scene */
+#envelope-scene { background-color: #1a0205; }
 .envelope {
-    width: 300px;
-    height: 200px;
-    background: var(--cream);
+    width: 280px;
+    height: 180px;
+    background: var(--paper-bg);
     position: relative;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    border-radius: 6px;
     cursor: pointer;
 }
-
 .wax-seal {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 60px;
-    height: 60px;
-    background: var(--burgundy);
+    width: 55px;
+    height: 55px;
+    background: var(--ink-color);
     border-radius: 50%;
-    border: 2px solid var(--gold);
+    border: 2px solid #d4af37;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-    z-index: 5;
-    transition: transform 0.5s ease, opacity 0.5s ease;
-}
-
-.wax-seal .initials {
-    font-family: var(--font-heading);
-    color: var(--gold);
-    font-size: 1.8rem;
-}
-
-.wax-seal.crack {
-    transform: translate(-50%, -50%) scale(1.3);
-    opacity: 0;
+    color: #d4af37;
+    font-size: 1.5rem;
 }
 
 /* ==========================================================================
-   5. LOVE LETTER SCENE (PARCHMENT LINED TEXTURE)
+   5. SCRAPBOOK LOVE LETTER SCENE (MATCHING IMAGE EXACTLY)
    ========================================================================== */
 #letter-scene {
-    background-color: var(--deep-burgundy);
+    background: #610b14 radial-gradient(circle, #7a111c 0%, #40040a 100%);
     overflow-y: auto;
-    padding: 40px 0;
+    padding: 40px 15px;
 }
 
-.letter-paper {
-    background: var(--cream);
-    background-image: repeating-linear-gradient(
-        var(--cream) 0px, 
-        var(--cream) 29px, 
-        #e5d8d0 30px
-    );
-    color: var(--text-dark);
-    width: 90%;
-    max-width: 650px;
-    padding: 50px 40px;
-    border-radius: 4px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+.scrapbook-container {
     position: relative;
-    transition: transform 1.5s ease, opacity 1.5s ease;
+    width: 100%;
+    max-width: 680px;
+    margin: auto;
 }
 
-.letter-title {
-    font-family: var(--font-heading);
-    font-size: 2.8rem;
-    color: var(--burgundy);
-    margin-bottom: 30px;
-    text-align: center;
-    line-height: 1.2;
-    border-bottom: 1px solid var(--rose-pink);
-    padding-bottom: 15px;
+/* Lined Notebook Paper */
+.letter-paper {
+    background-color: var(--paper-bg);
+    background-image: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        var(--paper-line) 32px
+    );
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    padding: 60px 45px 50px 65px;
+    border-radius: 2px;
+    clip-path: polygon(
+        0% 1%, 98% 0%, 100% 2%, 99% 98%, 
+        97% 100%, 2% 99%, 0% 97%
+    ); /* Torn paper edge feel */
+    position: relative;
+    z-index: 2;
+}
+
+.letter-header-handwritten {
+    font-size: 2.3rem;
+    line-height: 1.25;
+    margin-bottom: 25px;
+    color: var(--ink-color);
+    font-weight: 600;
 }
 
 .letter-content {
-    font-size: 1.35rem;
-    line-height: 1.8;
+    font-size: 1.95rem;
+    line-height: 32px; /* Aligned exactly with lines */
+    color: var(--ink-color);
 }
 
 .letter-line {
     opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 1s ease, transform 1s ease;
-    margin-bottom: 18px;
+    transform: translateY(8px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    margin-bottom: 12px;
 }
 
 .letter-line.visible {
@@ -354,57 +273,129 @@ body, html {
     transform: translateY(0);
 }
 
+/* Signature */
 .signature-section {
-    margin-top: 40px;
-    text-align: right;
-    font-size: 1.4rem;
+    margin-top: 35px;
+    text-align: left;
+    padding-left: 40%;
+}
+
+.yours-text {
+    font-size: 2.1rem;
+    line-height: 32px;
 }
 
 .signature-line {
-    font-family: var(--font-heading);
-    font-size: 2.5rem;
-    color: var(--burgundy);
-    margin-top: 5px;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--ink-color);
 }
 
 .interactive-heart {
     cursor: pointer;
     display: inline-block;
-    transition: transform 0.2s ease;
 }
 
-.interactive-heart:hover {
-    transform: scale(1.3);
+/* Overlays to match Image Decorative Elements */
+.stamp-badge {
+    position: absolute;
+    top: -15px;
+    left: 15px;
+    width: 60px;
+    height: 75px;
+    background: #fff;
+    border: 2px dashed #b58d88;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8rem;
+    transform: rotate(-8deg);
+    z-index: 5;
+    box-shadow: 2px 4px 10px rgba(0,0,0,0.3);
 }
 
-.blush-glow {
-    box-shadow: 0 0 50px rgba(232, 197, 200, 0.8);
+.mini-envelope-badge {
+    position: absolute;
+    top: 20px;
+    right: 120px;
+    width: 60px;
+    height: 42px;
+    background: #8f1922;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f7aab1;
+    font-size: 1.2rem;
+    box-shadow: 2px 4px 8px rgba(0,0,0,0.4);
+    z-index: 5;
 }
 
-/* ==========================================================================
-   6. ENDING NIGHT SKY SCENE
-   ========================================================================== */
+.sketched-heart {
+    position: absolute;
+    top: -25px;
+    right: -10px;
+    width: 120px;
+    height: 120px;
+    transform: rotate(12deg);
+    z-index: 5;
+}
+
+.heart-border-right {
+    position: absolute;
+    top: 0;
+    right: -15px;
+    width: 45px;
+    height: 100%;
+    background: repeating-linear-gradient(
+        45deg,
+        #a8202d,
+        #a8202d 15px,
+        #e36b78 15px,
+        #e36b78 30px
+    );
+    z-index: 1;
+    box-shadow: -3px 0 10px rgba(0,0,0,0.3);
+}
+
+.dried-rose-overlay {
+    position: absolute;
+    top: 70px;
+    left: -40px;
+    font-size: 7.5rem;
+    z-index: 6;
+    transform: rotate(-15deg);
+    filter: drop-shadow(5px 10px 8px rgba(0,0,0,0.5));
+    pointer-events: none;
+}
+
+.binder-clip {
+    position: absolute;
+    bottom: -10px;
+    right: 20px;
+    font-size: 4rem;
+    z-index: 6;
+    transform: rotate(-20deg);
+    filter: drop-shadow(3px 5px 6px rgba(0,0,0,0.5));
+}
+
+/* Ending Scene */
 #ending-scene {
-    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    background: radial-gradient(ellipse at bottom, #1c2536 0%, #080a12 100%);
 }
 
 .ps-message {
-    font-family: var(--font-heading);
-    font-size: 2.5rem;
-    color: var(--gold-light);
+    font-size: 2.8rem;
+    color: #fce4e6;
     text-align: center;
     padding: 0 20px;
     opacity: 0;
     transition: opacity 2s ease;
 }
 
-.ps-message.visible {
-    opacity: 1;
-}
+.ps-message.visible { opacity: 1; }
 
-/* ==========================================================================
-   7. EASTER EGG MODAL
-   ========================================================================== */
+/* Modal */
 .modal {
     position: fixed;
     top: 0;
@@ -421,16 +412,7 @@ body, html {
     transition: opacity 0.5s ease;
 }
 
-.modal.open {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.modal-content {
-    position: relative;
-    max-width: 400px;
-    width: 90%;
-}
+.modal.open { opacity: 1; pointer-events: auto; }
 
 .polaroid-frame {
     background: #fff;
@@ -447,11 +429,9 @@ body, html {
 }
 
 .polaroid-caption {
-    font-family: var(--font-heading);
     font-size: 1.8rem;
-    color: var(--text-dark);
+    color: var(--ink-color);
     margin-top: 15px;
-    line-height: 1.2;
 }
 
 .close-modal {
@@ -463,13 +443,11 @@ body, html {
     cursor: pointer;
 }
 
-/* ==========================================================================
-   RESPONSIVE DESIGN
-   ========================================================================== */
+/* Responsiveness */
 @media (max-width: 600px) {
-    .handwritten-title { font-size: 2.4rem; }
-    .letter-paper { padding: 30px 20px; }
-    .letter-title { font-size: 2.2rem; }
-    .letter-content { font-size: 1.15rem; }
-    .ps-message { font-size: 1.8rem; }
+    .letter-paper { padding: 40px 25px 30px 35px; }
+    .letter-header-handwritten { font-size: 1.8rem; }
+    .letter-content { font-size: 1.55rem; line-height: 28px; }
+    .dried-rose-overlay { font-size: 5rem; left: -20px; }
+    .sketched-heart { width: 80px; }
 }
