@@ -163,33 +163,21 @@ img { max-width: 100%; display: block; }
 
 .fade-overlay.active { opacity: 1; }
 
-.music-toggle {
+.music-widget {
   position: fixed;
   top: 20px;
   right: 20px;
   z-index: 50;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(251, 243, 231, .1);
-  border: 1px solid rgba(230, 201, 138, .45);
-  color: var(--gold-soft);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
+  width: min(300px, calc(100vw - 40px));
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,.4);
+  border: 1px solid rgba(230, 201, 138, .4);
+  background: rgba(0,0,0,.2);
   backdrop-filter: blur(6px);
-  transition: transform .3s var(--ease-slow), background .3s ease, box-shadow .3s ease;
 }
 
-.music-toggle:hover { transform: scale(1.08); }
-
-.music-toggle.playing {
-  background: rgba(230, 201, 138, .18);
-  box-shadow: 0 0 18px rgba(230, 201, 138, .35);
-}
-
-.music-toggle.playing .music-icon { animation: pulseNote 1.6s ease-in-out infinite; }
+.music-widget iframe { display: block; }
 
 .chapter-dots {
   position: fixed;
@@ -1067,7 +1055,7 @@ img { max-width: 100%; display: block; }
     max-width: 280px;
   }
   .chapter-dots { right: 12px; }
-  .music-toggle { top: 14px; right: 14px; width: 40px; height: 40px; }
+  .music-widget { top: 12px; right: 12px; }
   .flower-bed { gap: 14px; }
   .envelope { width: 82vw; }
 }
