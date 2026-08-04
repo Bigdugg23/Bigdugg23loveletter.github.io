@@ -48,18 +48,35 @@ const CONFIG = {
   //   "cooldown" - petals pause and the palette turns cooler
   //   "bloom"    - flowers bloom around the page and warmth returns
   letterSentences: [
-    { text: "Every love story begins with a smile — and yours has never once let me go.", fx: "hearts" },
-    { text: "I still remember the first time your laughter caught me off guard, loud, unfiltered, and completely you.", fx: "sparkles" },
-    { text: "Your cheeks go soft and pink whenever you're trying not to smile at something silly I said, and I live for that exact second.", fx: "blush" },
-    { text: "Even your braces catch the light when you grin like nothing in the world could touch you.", fx: "stars" },
-    { text: "And when you leave the room, even for a minute, everything goes a little quieter, a little colder — like the sun stepped out too.", fx: "cooldown" },
-    { text: "But you always come back. You always do.", fx: null },
-    { text: "So hear this clearly, in case you've ever doubted it for even a second — you are seen, you are chosen, and you are loved.", fx: "bloom" },
-    { text: "Thank you for being the softest place I have ever landed.", fx: null }
+    { text: "My Mama Mhlungu,", fx: null },
+    { text: "Or should I say... my Momo Smiles.", fx: null },
+    { text: "I still don't understand how one person can make my heart feel so full just by being herself.", fx: null },
+    { text: "It's your smile that keeps replaying in my mind long after you've gone.", fx: "hearts" },
+    { text: "It's your laughter that somehow makes every bad day feel smaller.", fx: "sparkles" },
+    { text: "It's your cute little cheeks that I never get tired of kissing.", fx: "blush" },
+    { text: "It's the way you carry yourself, the way you look at me, the way you make even the simplest moments feel special.", fx: null },
+    { text: "And your braces...", fx: "stars" },
+    { text: "I don't know why, but they've become one of my favorite things about you. Every time you smile, they remind me that the little things are often the ones we fall in love with the most.", fx: null },
+    { text: "Your presence is my favorite place to be.", fx: null },
+    { text: "When you're around, everything feels warm, peaceful, and right.", fx: null },
+    { text: "But the moment you leave...", fx: "cooldown" },
+    { text: "Everything changes.", fx: null },
+    { text: "The silence gets louder.", fx: null },
+    { text: "The room feels colder.", fx: null },
+    { text: "And I find myself missing you before you've even made it home.", fx: null },
+    { text: "I don't know what tomorrow has planned for us.", fx: null },
+    { text: "I don't know what title life will one day give us.", fx: null },
+    { text: "But I do know this—", fx: null },
+    { text: "If I had to choose a smile to look at for the rest of my life, it would always be yours.", fx: "hearts" },
+    { text: "If I had to choose a laugh to listen to, it would always be yours.", fx: "sparkles" },
+    { text: "And if I had to choose one heart to protect, it would always be yours.", fx: null },
+    { text: "Thank you for being my Mama Mhlungu.", fx: null },
+    { text: "Thank you for being my Momo Smiles.", fx: null },
+    { text: "Most of all, thank you for being the kind of person who makes love feel gentle.", fx: "bloom" }
   ],
 
   signatureLine: "Yours,",
-  signatureName: "Bigduggmustfall ❤️",
+  signatureName: "Bigduggmustfall.",
 
   // How many times the little heart must be tapped to unlock the
   // secret scene.
@@ -175,96 +192,30 @@ function stopAmbient() {
 }
 
 /* ----------------------------------------------------------------
-   4. MUSIC
-   A soft, looping music-box style pad synthesized in the browser
-   with the Web Audio API — no external mp3 required, so the site
-   works the moment it's hosted on GitHub Pages. To use a real
-   recording instead, uncomment the <audio id="bg-music"> tag in
-   index.html and swap startMusic()/stopMusic() below to control
-   that element instead.
+   4. MUSIC — "Summers Over Interlude" by Drake (feat. Majid Jordan)
+   Played through Spotify's official embedded player (the iFrame API),
+   which is the only legitimate way to include a specific commercial
+   recording on a static site — no audio file is hosted or bundled.
+   Spotify's terms require the widget to remain visibly on the page,
+   so full playback (and a smooth volume fade) isn't something a
+   hidden custom button can fake; we get play/pause control and the
+   visitor sees Spotify's own compact player in the corner.
    ---------------------------------------------------------------- */
-let audioCtx = null;
-let masterGain = null;
-let musicTimer = null;
-let musicPlaying = false;
-let patternIndex = 0;
 
-const NOTE_FREQS = { C4: 261.63, D4: 293.66, E4: 329.63, G4: 392.0, A4: 440.0, B4: 493.88, D5: 587.33 };
-const PATTERN = ["C4", "E4", "G4", "B4", "D5", "B4", "G4", "E4"];
+// To change the song: replace this with another track's URI.
+// Get it from open.spotify.com → the track's "···" menu → Share →
+// Copy Song Link, then swap the ID into "spotify:track:<id>".
+const TRACK_URI = "spotify:track:5THqY9CnwXQmFBM6HtDCZR"; // Summers Over Interlude – Drake
 
-function ensureAudioCtx() {
-  if (!audioCtx) {
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    audioCtx = new Ctx();
-    masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0;
-    masterGain.connect(audioCtx.destination);
-  }
-  return audioCtx;
-}
+let spotifyController = null;
 
-function playNote(freq, startTime, duration, gain) {
-  const osc = audioCtx.createOscillator();
-  const noteGain = audioCtx.createGain();
-  osc.type = "sine";
-  osc.frequency.value = freq;
-  noteGain.gain.setValueAtTime(0, startTime);
-  noteGain.gain.linearRampToValueAtTime(gain, startTime + 0.5);
-  noteGain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
-  osc.connect(noteGain);
-  noteGain.connect(masterGain);
-  osc.start(startTime);
-  osc.stop(startTime + duration + 0.1);
-}
-
-function scheduleLoop() {
-  const now = audioCtx.currentTime + 0.05;
-  const note = PATTERN[patternIndex % PATTERN.length];
-  playNote(NOTE_FREQS[note], now, 2.4, 0.05);
-  if (patternIndex % 4 === 0) {
-    playNote(NOTE_FREQS.C4 / 2, now, 3.8, 0.03); // low, warm undertone
-  }
-  patternIndex++;
-  musicTimer = setTimeout(scheduleLoop, 950);
-}
-
-function startMusic() {
-  ensureAudioCtx();
-  if (audioCtx.state === "suspended") audioCtx.resume();
-  musicPlaying = true;
-  masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-  masterGain.gain.linearRampToValueAtTime(1, audioCtx.currentTime + 1.4);
-  scheduleLoop();
-  const btn = $("#music-toggle");
-  btn.classList.add("playing");
-  btn.setAttribute("aria-pressed", "true");
-  btn.setAttribute("aria-label", "Pause music");
-}
-
-function stopMusic() {
-  musicPlaying = false;
-  clearTimeout(musicTimer);
-  if (audioCtx) {
-    masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-    masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.8);
-  }
-  const btn = $("#music-toggle");
-  btn.classList.remove("playing");
-  btn.setAttribute("aria-pressed", "false");
-  btn.setAttribute("aria-label", "Play soft piano music");
-}
-
-function fadeOutMusicSlow(durationMs) {
-  if (!audioCtx || !musicPlaying) return;
-  masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-  masterGain.gain.setValueAtTime(masterGain.gain.value, audioCtx.currentTime);
-  masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + durationMs / 1000);
-  setTimeout(() => {
-    clearTimeout(musicTimer);
-    musicPlaying = false;
-    $("#music-toggle").classList.remove("playing");
-  }, durationMs + 200);
-}
+window.onSpotifyIframeApiReady = (IFrameAPI) => {
+  const element = document.getElementById("spotify-embed-target");
+  const options = { uri: TRACK_URI, width: "100%", height: "80" };
+  IFrameAPI.createController(element, options, (EmbedController) => {
+    spotifyController = EmbedController;
+  });
+};
 
 /* ----------------------------------------------------------------
    5. SCENE 1 — COVER / PASSWORD
@@ -296,7 +247,13 @@ function unlockLetter() {
   const overlay = $("#fade-overlay");
   overlay.classList.add("active"); // fade to black
 
-  if (!musicPlaying) startMusic(); // form submit = a real user gesture
+  // Password submit is a real user gesture, so this is our best shot
+  // at satisfying autoplay policies. If Spotify's controller hasn't
+  // finished loading yet, the visitor can still hit play on the
+  // widget itself.
+  if (spotifyController) {
+    try { spotifyController.play(); } catch (e) { /* ignore */ }
+  }
 
   setTimeout(() => {
     showScene("welcome");
@@ -488,7 +445,7 @@ SCENE_INIT.letter = function initLetterScene() {
   continueBtn.classList.remove("show");
   paper.scrollTop = 0;
 
-  const gap = prefersReducedMotion ? 400 : 2500;
+  const gap = prefersReducedMotion ? 400 : 2100;
 
   CONFIG.letterSentences.forEach((sentence, i) => {
     const p = document.createElement("p");
@@ -594,7 +551,11 @@ SCENE_INIT.ending = function initEndingScene() {
     }
   }
 
-  fadeOutMusicSlow(7000);
+  // A smooth volume fade isn't available through the public embed
+  // API, so we simply let the track keep playing under the night
+  // sky — pausing here would cut it off abruptly instead. If you'd
+  // rather it stop, uncomment the line below.
+  // if (spotifyController) spotifyController.pause();
 };
 
 function initEndingInteractions() {
@@ -612,11 +573,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initSignatureInteractions();
   initSecretInteractions();
   initEndingInteractions();
-
-  $("#music-toggle").addEventListener("click", () => {
-    if (musicPlaying) stopMusic();
-    else startMusic();
-  });
 
   // Hearts + petals begin drifting immediately on the cover page.
   startAmbient();
