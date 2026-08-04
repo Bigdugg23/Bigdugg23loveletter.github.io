@@ -1,146 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Letter for Someone Who Changed My World</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>A Letter for Someone Who Changed My World</title>
+<meta name="description" content="A private, interactive love letter." />
 
-    <!-- Google Fonts for Handwriting & Typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Dancing+Script:wght@500;600;700&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="style.css">
+<!--
+  ============================================================
+  CUSTOMIZATION GUIDE
+  ============================================================
+  1. The password, names, and the full letter text all live in
+     ONE place: the CONFIG object at the very top of script.js.
+     You do not need to touch this HTML file to personalize
+     the letter, the password, or the ending message.
+
+  2. To add a real photo to the secret Polaroid, drop an image
+     into assets/images/ and follow the instructions in the
+     "Secret Scene" section below (search for "POLAROID").
+
+  3. To use a real recorded piano track instead of the built-in
+     synthesized music, uncomment the <audio id="bg-music"> tag
+     below and see the comment above startMusic() in script.js
+     for the two lines to swap.
+  ============================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Caveat:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+  rel="stylesheet"
+/>
+
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-    <!-- Floating Background Particles Container -->
-    <div id="particle-container"></div>
+<!-- ============================================================
+     GLOBAL AMBIENT LAYERS
+     These sit above every scene and hold drifting hearts / petals
+     that JS spawns continuously. Purely decorative (aria-hidden).
+     ============================================================ -->
+<div id="ambient-hearts" class="ambient-layer" aria-hidden="true"></div>
+<div id="ambient-petals" class="ambient-layer" aria-hidden="true"></div>
 
-    <!-- Music Toggle -->
-    <button id="music-toggle" aria-label="Toggle Ambient Music">
-        <span id="music-icon">🎵</span>
+<!-- Full-screen fade used for the "page fades to black" moment right
+     after the correct password is entered -->
+<div id="fade-overlay" class="fade-overlay" aria-hidden="true"></div>
+
+<!-- Music toggle — visible on every scene -->
+<button id="music-toggle" class="music-toggle" type="button" aria-pressed="false" aria-label="Play soft piano music">
+  <span class="music-icon" aria-hidden="true">♪</span>
+</button>
+
+<!--
+  Optional: use a real recording instead of the built-in synth music.
+  Drop an mp3 into assets/audio/, uncomment the line below, then see
+  the comment above startMusic() in script.js for how to point the
+  toggle at this element instead of the synthesizer.
+-->
+<!-- <audio id="bg-music" src="assets/audio/piano.mp3" loop preload="none"></audio> -->
+
+<!-- Quiet chapter progress indicator, updates via JS -->
+<nav class="chapter-dots" id="chapter-dots" aria-hidden="true">
+  <span class="dot" data-scene="welcome"></span>
+  <span class="dot" data-scene="garden"></span>
+  <span class="dot" data-scene="envelope"></span>
+  <span class="dot" data-scene="letter"></span>
+  <span class="dot" data-scene="signature"></span>
+</nav>
+
+<main id="scenes">
+
+  <!-- ============================================================
+       SCENE 1 — COVER / PASSWORD GATE
+       ============================================================ -->
+  <section id="scene-cover" class="scene active" data-scene="cover">
+    <div class="cover-vignette" aria-hidden="true"></div>
+    <div class="cover-content">
+      <p class="eyebrow">a letter, sealed just for you</p>
+      <h1 class="cover-title">A Letter for Someone<br />Who Changed My World.</h1>
+      <p class="cover-subtitle">Only one person knows the password.</p>
+
+      <form id="password-form" class="password-form" novalidate>
+        <label for="password-input" class="sr-only">Enter the secret word</label>
+        <input
+          type="password"
+          id="password-input"
+          name="password"
+          class="password-input"
+          placeholder="Enter the secret word…"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+        <button type="submit" class="unlock-btn">
+          <span>Unlock</span>
+        </button>
+      </form>
+      <p id="password-error" class="password-error" role="alert" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCENE 2 — WELCOME
+       ============================================================ -->
+  <section id="scene-welcome" class="scene" data-scene="welcome">
+    <div class="welcome-content">
+      <p id="welcome-sentence" class="welcome-sentence" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCENE 3 — FLOWER GARDEN
+       ============================================================ -->
+  <section id="scene-garden" class="scene" data-scene="garden">
+    <div class="garden-glow" aria-hidden="true"></div>
+    <div class="butterflies" id="butterflies" aria-hidden="true"></div>
+
+    <div class="flower-bed" id="flower-bed">
+      <span class="flower" data-flower="rose" style="--i:0">🌹</span>
+      <span class="flower" data-flower="tulip" style="--i:1">🌷</span>
+      <span class="flower" data-flower="babys-breath" style="--i:2">🤍</span>
+      <span class="flower" data-flower="daisy" style="--i:3">🌼</span>
+    </div>
+
+    <button id="ribbon" class="ribbon" type="button" aria-label="For my Mama Mhlungu — tap to continue">
+      <span class="ribbon-text">For my Mama Mhlungu.</span>
     </button>
-    <!-- Background Audio: Drake - Summer's Over Interlude -->
-    <audio id="bg-music" loop src="https://files.catbox.moe/97a4vh.mp3"></audio>
+  </section>
 
-    <!-- 1. COVER PAGE -->
-    <section id="cover-scene" class="scene active">
-        <div class="cover-card">
-            <h1 class="handwritten-title">A Letter for Someone Who Changed My World</h1>
-            <p class="subtitle">Only one person knows the password.</p>
-            
-            <form id="password-form" onsubmit="return false;">
-                <input type="password" id="password-input" placeholder="Enter the secret word..." autocomplete="off">
-                <button type="submit" id="unlock-btn">Unlock 🌹</button>
-            </form>
-            <p id="error-message" class="error-msg"></p>
-        </div>
-    </section>
-
-    <!-- 2. WELCOME SCENE -->
-    <section id="welcome-scene" class="scene">
-        <div class="typewriter-container">
-            <p id="welcome-text"></p>
-        </div>
-    </section>
-
-    <!-- 3. FLOWER GARDEN SCENE -->
-    <section id="garden-scene" class="scene">
-        <div class="garden-container">
-            <div class="flowers-wrapper">
-                <div class="flower rose">🌹</div>
-                <div class="flower tulip">🌷</div>
-                <div class="flower babys-breath">🤍</div>
-                <div class="flower daisy">🌼</div>
-            </div>
-            <div id="ribbon" class="ribbon">
-                <span>For my Mama Mhlungu</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. ENVELOPE SCENE -->
-    <section id="envelope-scene" class="scene">
-        <div class="envelope-wrapper">
-            <div class="envelope" id="envelope">
-                <div class="front flap"></div>
-                <div class="front pocket"></div>
-                <div class="wax-seal" id="wax-seal">
-                    <span class="initials">MS</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. LOVE LETTER SCENE (MATCHING YOUR IMAGE) -->
-    <section id="letter-scene" class="scene">
-        <div class="scrapbook-container">
-            <!-- Heart tape border right -->
-            <div class="heart-border-right"></div>
-            
-            <!-- Stamp Top Left -->
-            <div class="stamp-badge">
-                <div class="stamp-inner">🌸</div>
-            </div>
-
-            <!-- Red Envelope Accent Top -->
-            <div class="mini-envelope-badge">❤️</div>
-
-            <!-- Sketch Heart Top Right -->
-            <div class="sketched-heart">
-                <svg viewBox="0 0 100 100" class="heart-svg">
-                    <path d="M50 88 C20 60 5 40 15 20 C25 5 45 10 50 25 C55 10 75 5 85 20 C95 40 80 60 50 88 Z" fill="none" stroke="#7a141a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-
-            <!-- Dried Rose Over Left Edge -->
-            <div class="dried-rose-overlay">🥀</div>
-
-            <!-- Main Lined Letter Paper -->
-            <!-- Inside <section id="letter-scene"> -->
-<div class="signature-section" id="signature-section" style="opacity: 0; transition: opacity 1.5s ease;">
-    <p class="yours-text">Yours, ❤️</p>
-    <div class="signature-line">
-        Bigduggmustfall <span id="easter-egg-heart" class="interactive-heart">♡</span>
+  <!-- ============================================================
+       SCENE 4 — ENVELOPE
+       ============================================================ -->
+  <section id="scene-envelope" class="scene" data-scene="envelope">
+    <div class="envelope-stage">
+      <div class="envelope" id="envelope">
+        <div class="envelope-back"></div>
+        <div class="letter-peek" aria-hidden="true"></div>
+        <div class="envelope-flap"></div>
+        <button
+          id="wax-seal"
+          class="wax-seal"
+          type="button"
+          aria-label="Break the wax seal to open your letter"
+        >
+          <span class="seal-half seal-left" aria-hidden="true">M</span>
+          <span class="seal-half seal-right" aria-hidden="true">M</span>
+        </button>
+      </div>
+      <p class="envelope-hint" id="envelope-hint">Tap the seal to open it</p>
     </div>
-</div>
-                    <!-- Sentences injected dynamically via script.js -->
-                </div>
+  </section>
 
-                <div class="signature-section">
-                    <p class="yours-text">Yours,</p>
-                    <div class="signature-line">
-                        Bigduggmustfall <span id="easter-egg-heart" class="interactive-heart">♡</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Red Binder Clip Bottom Right -->
-            <div class="binder-clip">📎</div>
-        </div>
-    </section>
-
-    <!-- 6. ENDING NIGHT SKY SCENE -->
-    <section id="ending-scene" class="scene">
-        <div class="ending-content">
-            <p id="ps-text" class="ps-message"></p>
-        </div>
-    </section>
-
-    <!-- 7. SECRET EASTER EGG MODAL -->
-    <div id="polaroid-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" id="close-modal">&times;</span>
-            <div class="polaroid-frame">
-                <div class="photo-placeholder">
-                    <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop" alt="Momo Smiles" id="polaroid-img">
-                </div>
-                <p class="polaroid-caption">"Every smile you've ever given me is still living rent-free in my heart. Thank you for being my Momo Smiles."</p>
-            </div>
-        </div>
+  <!-- ============================================================
+       SCENE 5 — THE LOVE LETTER
+       Sentences are injected by JS from CONFIG.letterSentences
+       so the whole letter can be edited from one place.
+       ============================================================ -->
+  <section id="scene-letter" class="scene" data-scene="letter">
+    <div class="letter-paper" id="letter-paper">
+      <h2 class="letter-title" id="letter-title"></h2>
+      <div class="letter-body" id="letter-body"></div>
+      <button id="letter-continue" class="continue-btn" type="button">
+        Continue →
+      </button>
     </div>
+    <div class="letter-fx-layer" id="letter-fx-layer" aria-hidden="true"></div>
+  </section>
 
-    <script src="script.js"></script>
+  <!-- ============================================================
+       SCENE 6 — SIGNATURE (+ hidden Easter egg)
+       ============================================================ -->
+  <section id="scene-signature" class="scene" data-scene="signature">
+    <div class="signature-paper">
+      <p class="signature-line" id="signature-line"></p>
+      <p class="signature-name" id="signature-name"></p>
+      <button
+        id="signature-heart"
+        class="signature-heart"
+        type="button"
+        aria-label="A little heart"
+      >❤️</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCENE 7 — SECRET SCENE (Easter egg reward)
+       ============================================================ -->
+  <section id="scene-secret" class="scene" data-scene="secret">
+    <div class="secret-content">
+      <p class="secret-message" id="secret-message"></p>
+
+      <!--
+        POLAROID PHOTO PLACEHOLDER
+        To use your own photo: place an image at assets/images/us.jpg,
+        then replace the <span class="polaroid-placeholder-icon"> line
+        below with:
+          <img src="assets/images/us.jpg" alt="The two of us" class="polaroid-img" />
+      -->
+      <div class="polaroid">
+        <div class="polaroid-photo">
+          <span class="polaroid-placeholder-icon" aria-hidden="true">🤍</span>
+        </div>
+        <p class="polaroid-caption" id="polaroid-caption"></p>
+      </div>
+
+      <button id="secret-continue" class="continue-btn" type="button">Continue →</button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SCENE 8 — ENDING
+       ============================================================ -->
+  <section id="scene-ending" class="scene" data-scene="ending">
+    <div class="night-sky" id="night-sky" aria-hidden="true"></div>
+    <div class="fireflies" id="fireflies" aria-hidden="true"></div>
+    <p class="ps-sentence" id="ps-sentence"></p>
+    <div class="final-petal" id="final-petal" aria-hidden="true">🌸</div>
+    <button id="restart-btn" class="restart-btn" type="button">Read it again</button>
+  </section>
+
+</main>
+
+<script src="script.js"></script>
 </body>
 </html>
