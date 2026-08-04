@@ -19,10 +19,10 @@
      into assets/images/ and follow the instructions in the
      "Secret Scene" section below (search for "POLAROID").
 
-  3. To use a real recorded piano track instead of the built-in
-     synthesized music, uncomment the <audio id="bg-music"> tag
-     below and see the comment above startMusic() in script.js
-     for the two lines to swap.
+  3. The music is Spotify's official embedded player for the chosen
+     track (see TRACK_URI in script.js) — not a hosted audio file.
+     To change the song, replace TRACK_URI with another Spotify track
+     URI (find it via Share → Copy Song Link on open.spotify.com).
   ============================================================
 -->
 
@@ -49,18 +49,18 @@
      after the correct password is entered -->
 <div id="fade-overlay" class="fade-overlay" aria-hidden="true"></div>
 
-<!-- Music toggle — visible on every scene -->
-<button id="music-toggle" class="music-toggle" type="button" aria-pressed="false" aria-label="Play soft piano music">
-  <span class="music-icon" aria-hidden="true">♪</span>
-</button>
-
-<!--
-  Optional: use a real recording instead of the built-in synth music.
-  Drop an mp3 into assets/audio/, uncomment the line below, then see
-  the comment above startMusic() in script.js for how to point the
-  toggle at this element instead of the synthesizer.
--->
-<!-- <audio id="bg-music" src="assets/audio/piano.mp3" loop preload="none"></audio> -->
+<!-- Music: "Summers Over Interlude" — Drake (feat. Majid Jordan), Views (2016).
+     Played via Spotify's official embedded player rather than a hosted
+     audio file — that's the only legal way to include a specific
+     commercial recording on a static site. Spotify's terms require
+     their player to stay visibly on the page, so it sits here as a
+     small framed widget instead of hiding behind a custom icon.
+     Swap TRACK_URI in script.js if this ever needs to point at a
+     different recording. -->
+<div class="music-widget" id="music-widget">
+  <div id="spotify-embed-target"></div>
+</div>
+<script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
 
 <!-- Quiet chapter progress indicator, updates via JS -->
 <nav class="chapter-dots" id="chapter-dots" aria-hidden="true">
