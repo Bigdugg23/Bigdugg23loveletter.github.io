@@ -1,453 +1,1090 @@
-/* ==========================================================================
-   THEME COLORS & FONTS
-   ========================================================================== */
+/* ================================================================
+   A LETTER FOR SOMEONE WHO CHANGED MY WORLD
+   Stylesheet
+   ================================================================
+   TABLE OF CONTENTS
+   1.  Design tokens (edit colors / fonts here)
+   2.  Reset & base
+   3.  Utility classes
+   4.  Global ambient layers (hearts, petals) + music/progress UI
+   5.  Scene machine (how scenes fade / zoom into each other)
+   6.  Scene 1 — Cover / password
+   7.  Scene 2 — Welcome
+   8.  Scene 3 — Garden
+   9.  Scene 4 — Envelope
+   10. Scene 5 — Letter
+   11. Scene 6 — Signature
+   12. Scene 7 — Secret
+   13. Scene 8 — Ending
+   14. Keyframe animations
+   15. Responsive tweaks
+   16. Reduced motion & accessibility
+   ================================================================ */
+
+
+/* ----------------------------------------------------------------
+   1. DESIGN TOKENS
+   Only 4 hues by design, per the brief: burgundy, rose, cream, gold.
+   ---------------------------------------------------------------- */
 :root {
-    --bg-red: #730d19;
-    --deep-burgundy: #42040c;
-    --ink-color: #580d17;
-    --paper-bg: #f4eee3;
-    --paper-line: #d1c7b7;
-    
-    --font-handwriting: 'Dancing Script', 'Alex Brush', cursive;
-    --font-sans: 'Montserrat', sans-serif;
+  /* burgundy family */
+  --burgundy-deep:  #3a0d1f;
+  --burgundy:       #5c1a32;
+  --burgundy-soft:  #7a2942;
+
+  /* rose family */
+  --rose:           #d98a93;
+  --rose-soft:      #e7b3ba;
+  --blush:          #f3d9dc;
+
+  /* cream / paper family */
+  --cream:          #fbf3e7;
+  --cream-dim:      #efe4d2;
+  --paper-shadow:   #d8c9ae;
+
+  /* gold family */
+  --gold:           #c6a25d;
+  --gold-soft:      #e4c98a;
+  --gold-deep:      #8f7136;
+
+  /* a single desaturated neutral, used ONLY for the "cooler" letter
+     moment — mixed from rose + cream so it still reads as family */
+  --cool-mauve:     #cdc0c4;
+
+  /* ink */
+  --ink:            #2b1810;
+  --ink-soft:       #5a4436;
+
+  /* type */
+  --font-display: 'Great Vibes', cursive;
+  --font-hand:    'Caveat', cursive;
+  --font-serif:   'Cormorant Garamond', 'Georgia', serif;
+
+  /* motion */
+  --ease-slow: cubic-bezier(.22,.61,.36,1);
+  --dur-scene: 1.4s;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+/* ----------------------------------------------------------------
+   2. RESET & BASE
+   ---------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* this is a guided experience, not a scroll page */
+  background: var(--burgundy-deep);
+  font-family: var(--font-serif);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
 }
 
-body, html {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-color: var(--bg-red);
-    font-family: var(--font-handwriting);
-    color: var(--ink-color);
+body {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
 }
 
-/* Floating Particles */
-#particle-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 2;
+h1, h2, h3, p { margin: 0; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
 }
 
-.falling-item {
-    position: absolute;
-    top: -10%;
-    user-select: none;
-    animation: fall linear infinite;
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--gold-soft);
+  outline-offset: 3px;
 }
 
-@keyframes fall {
-    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+img { max-width: 100%; display: block; }
+
+/* ----------------------------------------------------------------
+   3. UTILITY
+   ---------------------------------------------------------------- */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
 }
 
-/* Audio Control Button */
-#music-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 100;
-    background: rgba(66, 4, 12, 0.7);
-    border: 1px solid #d4af37;
-    color: #fff;
-    padding: 10px 15px;
-    border-radius: 50px;
-    cursor: pointer;
-    backdrop-filter: blur(5px);
+/* ----------------------------------------------------------------
+   4. GLOBAL AMBIENT LAYERS + MUSIC / PROGRESS UI
+   ---------------------------------------------------------------- */
+.ambient-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
 }
 
-/* ==========================================================================
-   SCENE MANAGEMENT
-   ========================================================================== */
+.ambient-heart,
+.ambient-petal {
+  position: absolute;
+  will-change: transform, opacity;
+  user-select: none;
+}
+
+.ambient-heart {
+  color: var(--rose);
+  opacity: .55;
+  filter: drop-shadow(0 0 6px rgba(217,138,147,.35));
+  animation: floatUp linear forwards;
+}
+
+.ambient-petal {
+  animation: driftDown linear forwards;
+  opacity: .8;
+  background: linear-gradient(135deg, var(--rose), var(--rose-soft));
+  border-radius: 60% 40% 60% 40% / 70% 60% 40% 30%;
+  box-shadow: 0 0 4px rgba(58,13,31,.15);
+}
+
+.fade-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .9s ease;
+}
+
+.fade-overlay.active { opacity: 1; }
+
+.music-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 50;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(251, 243, 231, .1);
+  border: 1px solid rgba(230, 201, 138, .45);
+  color: var(--gold-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  backdrop-filter: blur(6px);
+  transition: transform .3s var(--ease-slow), background .3s ease, box-shadow .3s ease;
+}
+
+.music-toggle:hover { transform: scale(1.08); }
+
+.music-toggle.playing {
+  background: rgba(230, 201, 138, .18);
+  box-shadow: 0 0 18px rgba(230, 201, 138, .35);
+}
+
+.music-toggle.playing .music-icon { animation: pulseNote 1.6s ease-in-out infinite; }
+
+.chapter-dots {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+
+.chapter-dots.visible { opacity: 1; }
+
+.chapter-dots .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(230, 201, 138, .35);
+  transition: background .4s ease, transform .4s ease;
+}
+
+.chapter-dots .dot.active {
+  background: var(--gold-soft);
+  transform: scale(1.4);
+}
+
+/* ----------------------------------------------------------------
+   5. SCENE MACHINE
+   Every scene is stacked full-bleed; only .active is interactive.
+   JS toggles .active / .exiting to crossfade + gently "zoom".
+   ---------------------------------------------------------------- */
+#scenes {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+}
+
 .scene {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 1.5s ease, visibility 1.5s ease;
-    z-index: 1;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(1.035);
+  transition: opacity var(--dur-scene) var(--ease-slow),
+              transform var(--dur-scene) var(--ease-slow),
+              visibility 0s linear var(--dur-scene);
+  overflow: hidden;
 }
 
 .scene.active {
-    opacity: 1;
-    visibility: visible;
-    z-index: 10;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1);
+  z-index: 2;
+  transition: opacity var(--dur-scene) var(--ease-slow),
+              transform var(--dur-scene) var(--ease-slow),
+              visibility 0s linear 0s;
 }
 
-/* Cover Scene */
-#cover-scene {
-    background: radial-gradient(circle, #80121e 0%, #3b0209 100%);
-    text-align: center;
-    color: #f4eee3;
+.scene.exiting {
+  opacity: 0;
+  transform: scale(.97);
+  z-index: 1;
 }
 
-.cover-card {
-    padding: 40px 20px;
-    max-width: 500px;
+/* ----------------------------------------------------------------
+   6. SCENE 1 — COVER / PASSWORD
+   ---------------------------------------------------------------- */
+#scene-cover {
+  background:
+    radial-gradient(ellipse at 50% 20%, var(--burgundy-soft) 0%, var(--burgundy) 45%, var(--burgundy-deep) 100%);
 }
 
-.handwritten-title {
-    font-size: 3.5rem;
-    color: #fce4e6;
-    margin-bottom: 10px;
+.cover-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.55) 100%);
+  pointer-events: none;
 }
 
-.subtitle {
-    font-family: var(--font-sans);
-    font-size: 0.95rem;
-    color: #e5b3b8;
-    margin-bottom: 30px;
+.cover-content {
+  position: relative;
+  z-index: 2;
+  max-width: 560px;
+  padding: 32px;
 }
 
-#password-input {
-    width: 80%;
-    padding: 12px 20px;
-    border-radius: 25px;
-    border: 1px solid #d4af37;
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    font-family: var(--font-sans);
-    text-align: center;
-    outline: none;
+.eyebrow {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  font-size: .72rem;
+  color: var(--gold-soft);
+  margin-bottom: 18px;
+  opacity: .85;
 }
 
-#unlock-btn {
-    margin-top: 15px;
-    padding: 10px 30px;
-    border-radius: 25px;
-    border: none;
-    background: #d4af37;
-    color: #3b0209;
-    font-weight: 600;
-    cursor: pointer;
+.cover-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.4rem, 7vw, 4.2rem);
+  line-height: 1.25;
+  color: var(--cream);
+  text-shadow: 0 2px 18px rgba(0,0,0,.35);
+  margin-bottom: 20px;
 }
 
-.error-msg {
-    font-family: var(--font-sans);
-    margin-top: 15px;
-    color: #fce4e6;
-    font-size: 0.85rem;
+.cover-subtitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--rose-soft);
+  margin-bottom: 34px;
+  letter-spacing: .01em;
 }
 
-/* Welcome Scene */
-#welcome-scene {
-    background-color: var(--paper-bg);
-    color: var(--ink-color);
+.password-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
 }
 
-.typewriter-container {
-    font-size: 2.8rem;
-    text-align: center;
-    padding: 0 20px;
+.password-input {
+  flex: 1 1 240px;
+  max-width: 300px;
+  padding: 14px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(230,201,138,.5);
+  background: rgba(251,243,231,.08);
+  color: var(--cream);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  text-align: center;
+  letter-spacing: .02em;
+  transition: border-color .3s ease, background .3s ease, transform .18s ease;
 }
 
-/* Garden Scene */
-#garden-scene {
-    background: linear-gradient(180deg, #1c2b1d 0%, #0d170e 100%);
+.password-input::placeholder { color: rgba(251,243,231,.5); }
+
+.password-input:focus {
+  border-color: var(--gold-soft);
+  background: rgba(251,243,231,.14);
 }
 
-.flowers-wrapper {
-    display: flex;
-    gap: 20px;
-    font-size: 4rem;
-    margin-bottom: 40px;
+.password-input.shake {
+  animation: shakeInput .5s ease;
+  border-color: var(--rose);
 }
+
+.unlock-btn {
+  padding: 14px 30px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold-soft), var(--gold-deep));
+  color: var(--burgundy-deep);
+  font-weight: 600;
+  letter-spacing: .04em;
+  font-size: .92rem;
+  text-transform: uppercase;
+  box-shadow: 0 6px 20px rgba(0,0,0,.25);
+  transition: transform .25s var(--ease-slow), box-shadow .25s ease;
+}
+
+.unlock-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(0,0,0,.32); }
+.unlock-btn:active { transform: translateY(0); }
+
+.password-error {
+  min-height: 1.4em;
+  margin-top: 16px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: .92rem;
+  color: var(--rose-soft);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity .35s ease, transform .35s ease;
+}
+
+.password-error.visible { opacity: 1; transform: translateY(0); }
+
+#scene-cover.active .eyebrow { animation: fadeUp .9s var(--ease-slow) both .1s; }
+#scene-cover.active .cover-title { animation: fadeUp 1s var(--ease-slow) both .3s; }
+#scene-cover.active .cover-subtitle { animation: fadeUp 1s var(--ease-slow) both .6s; }
+#scene-cover.active .password-form { animation: fadeUp 1s var(--ease-slow) both .9s; }
+
+/* ----------------------------------------------------------------
+   7. SCENE 2 — WELCOME
+   ---------------------------------------------------------------- */
+#scene-welcome {
+  background: var(--cream);
+}
+
+.welcome-content { max-width: 700px; padding: 32px; }
+
+.welcome-sentence {
+  font-family: var(--font-hand);
+  font-weight: 600;
+  font-size: clamp(1.7rem, 5vw, 2.8rem);
+  color: var(--ink);
+  line-height: 1.5;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.welcome-sentence.visible { opacity: 1; }
+.welcome-sentence.fading { opacity: 0; transition: opacity 1.6s ease; }
+
+.welcome-sentence .char {
+  opacity: 0;
+  animation: inkIn .05s ease forwards;
+}
+
+/* ----------------------------------------------------------------
+   8. SCENE 3 — GARDEN
+   ---------------------------------------------------------------- */
+#scene-garden {
+  background: radial-gradient(ellipse at 50% 30%, var(--blush) 0%, var(--rose-soft) 55%, var(--rose) 100%);
+}
+
+.garden-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 15%, rgba(255,255,255,.5), transparent 60%);
+  pointer-events: none;
+}
+
+.butterflies {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.butterfly {
+  position: absolute;
+  font-size: 1.1rem;
+  animation: flutter linear forwards;
+  will-change: transform;
+}
+
+.flower-bed {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: clamp(18px, 5vw, 48px);
+  align-items: flex-end;
+  margin-bottom: 40px;
+  transition: transform 1.1s var(--ease-slow), opacity 1.1s var(--ease-slow);
+}
+
+.flower-bed.parted { transform: scale(1.05); }
 
 .flower {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 1s ease;
+  font-size: clamp(2.6rem, 8vw, 4.4rem);
+  display: inline-block;
+  opacity: 0;
+  transform: scale(.2) translateY(30px);
+  filter: drop-shadow(0 8px 14px rgba(58,13,31,.18));
 }
 
-.flower.bloom { opacity: 1; transform: translateY(0); }
+/* The bloom only plays once this scene actually becomes active —
+   scoping it to .scene.active (rather than animating unconditionally
+   from page load) is what makes the flowers bloom "on arrival". */
+.scene.active .flower {
+  animation: bloom .9s var(--ease-slow) forwards;
+  animation-delay: calc(var(--i) * .35s + .2s);
+}
+
+.flower-bed.parted .flower {
+  animation: none;
+  opacity: 1;
+  transform:
+    translateX(calc((var(--i) - 1.5) * 140%))
+    translateY(-10px)
+    scale(.9);
+  transition: transform 1s var(--ease-slow), opacity 1s ease .4s;
+  transition-delay: calc(var(--i) * .05s);
+}
+
+.flower-bed.parted.gone .flower { opacity: 0; }
 
 .ribbon {
-    background: var(--ink-color);
-    color: #f4eee3;
-    padding: 12px 35px;
-    border: 1px solid #d4af37;
-    font-size: 2.2rem;
-    cursor: pointer;
+  position: relative;
+  z-index: 2;
+  padding: 14px 36px;
+  background: linear-gradient(135deg, var(--burgundy-soft), var(--burgundy));
+  border-radius: 6px;
+  box-shadow: 0 10px 24px rgba(58,13,31,.35);
+  opacity: 0;
+  transition: transform .3s var(--ease-slow), box-shadow .3s ease, opacity .6s ease;
 }
 
-/* Envelope Scene */
-#envelope-scene { background-color: #1a0205; }
+.scene.active .ribbon {
+  animation: fadeUp 1s var(--ease-slow) forwards;
+  animation-delay: 1.7s;
+}
+
+.ribbon::before,
+.ribbon::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  width: 0; height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+}
+
+.ribbon::before { left: 0; border-top: 12px solid var(--burgundy-deep); }
+.ribbon::after { right: 0; border-top: 12px solid var(--burgundy-deep); }
+
+.ribbon:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(58,13,31,.4); }
+
+.ribbon.clicked { opacity: 0; pointer-events: none; }
+
+.ribbon-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3.4vw, 1.8rem);
+  color: var(--cream);
+  letter-spacing: .01em;
+}
+
+/* ----------------------------------------------------------------
+   9. SCENE 4 — ENVELOPE
+   ---------------------------------------------------------------- */
+#scene-envelope {
+  background: radial-gradient(ellipse at 50% 40%, var(--burgundy-soft) 0%, var(--burgundy-deep) 100%);
+}
+
+.envelope-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26px;
+}
+
 .envelope {
-    width: 280px;
-    height: 180px;
-    background: var(--paper-bg);
-    position: relative;
-    border-radius: 6px;
-    cursor: pointer;
+  position: relative;
+  width: min(78vw, 340px);
+  aspect-ratio: 3 / 2;
+  perspective: 900px;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,.45));
+  transition: transform 1.3s var(--ease-slow), opacity 1.1s ease;
 }
+
+.envelope-back {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, var(--cream) 0%, var(--cream-dim) 100%);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(143,113,54,.25);
+}
+
+.letter-peek {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: -4%;
+  height: 92%;
+  background: var(--cream);
+  border-radius: 4px;
+  box-shadow: 0 -4px 10px rgba(0,0,0,.08);
+  transform: translateY(0);
+  transition: transform 1.3s var(--ease-slow), opacity .6s ease;
+  z-index: 1;
+}
+
+.envelope.opened .letter-peek { transform: translateY(-92%); }
+
+.envelope-flap {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(150deg, var(--cream-dim), var(--paper-shadow));
+  clip-path: polygon(0 0, 100% 0, 50% 58%);
+  border-radius: 8px 8px 0 0;
+  transform-origin: top center;
+  transition: transform 1s var(--ease-slow);
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+}
+
+.envelope.opened .envelope-flap {
+  transform: rotateX(150deg);
+}
+
 .wax-seal {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 55px;
-    height: 55px;
-    background: var(--ink-color);
-    border-radius: 50%;
-    border: 2px solid #d4af37;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #d4af37;
-    font-size: 1.5rem;
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  z-index: 3;
+  background: radial-gradient(circle at 35% 30%, var(--rose) 0%, var(--burgundy) 55%, var(--burgundy-deep) 100%);
+  box-shadow: 0 6px 16px rgba(0,0,0,.4), inset 0 2px 4px rgba(255,255,255,.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .35s var(--ease-slow);
 }
 
-/* ==========================================================================
-   5. SCRAPBOOK LOVE LETTER SCENE (MATCHING IMAGE EXACTLY)
-   ========================================================================== */
-#letter-scene {
-    background: #610b14 radial-gradient(circle, #7a111c 0%, #40040a 100%);
-    overflow-y: auto;
-    padding: 40px 15px;
+.wax-seal:hover { transform: translate(-50%, -50%) scale(1.05); }
+
+.seal-half {
+  position: absolute;
+  top: 0; height: 100%; width: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--gold-soft);
+  text-shadow: 0 1px 1px rgba(0,0,0,.4);
+  transition: transform .7s var(--ease-slow), opacity .7s ease;
 }
 
-.scrapbook-container {
-    position: relative;
-    width: 100%;
-    max-width: 680px;
-    margin: auto;
+.seal-left { left: 0; justify-content: flex-end; padding-right: 1px; }
+.seal-right { left: 50%; justify-content: flex-start; padding-left: 1px; }
+
+.wax-seal.cracked .seal-left { transform: translate(-10px, 6px) rotate(-14deg); }
+.wax-seal.cracked .seal-right { transform: translate(10px, -6px) rotate(14deg); }
+.wax-seal.cracked { box-shadow: 0 6px 16px rgba(0,0,0,.4); }
+.wax-seal.hidden-seal { opacity: 0; pointer-events: none; transition: opacity .6s ease; }
+
+.envelope-hint {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--rose-soft);
+  font-size: .95rem;
+  letter-spacing: .03em;
+  opacity: .85;
+  transition: opacity .5s ease;
 }
 
-/* Lined Notebook Paper */
+/* ----------------------------------------------------------------
+   10. SCENE 5 — LETTER
+   ---------------------------------------------------------------- */
+#scene-letter {
+  background: linear-gradient(160deg, var(--burgundy) 0%, var(--burgundy-deep) 100%);
+  transition: background 1.6s ease, opacity var(--dur-scene) var(--ease-slow), transform var(--dur-scene) var(--ease-slow);
+}
+
+#scene-letter.cooled {
+  background: linear-gradient(160deg, #4a3f45 0%, #241a20 100%);
+}
+
 .letter-paper {
-    background-color: var(--paper-bg);
-    background-image: repeating-linear-gradient(
-        transparent,
-        transparent 31px,
-        var(--paper-line) 32px
-    );
-    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-    padding: 60px 45px 50px 65px;
-    border-radius: 2px;
-    clip-path: polygon(
-        0% 1%, 98% 0%, 100% 2%, 99% 98%, 
-        97% 100%, 2% 99%, 0% 97%
-    ); /* Torn paper edge feel */
-    position: relative;
-    z-index: 2;
+  position: relative;
+  z-index: 2;
+  width: min(90vw, 620px);
+  max-height: 82vh;
+  overflow-y: auto;
+  padding: clamp(28px, 5vw, 56px) clamp(24px, 6vw, 52px);
+  background-color: var(--cream);
+  background-image:
+    /* subtle paper grain via layered radial noise, no image assets needed */
+    radial-gradient(rgba(139,109,58,.05) 1px, transparent 1px),
+    radial-gradient(rgba(139,109,58,.04) 1px, transparent 1px);
+  background-size: 3px 3px, 7px 7px;
+  background-position: 0 0, 2px 3px;
+  border-radius: 3px;
+  box-shadow:
+    0 30px 60px rgba(0,0,0,.45),
+    0 0 0 1px rgba(143,113,54,.15);
+  transition: background-color 1.6s ease, box-shadow .6s ease;
 }
 
-.letter-header-handwritten {
-    font-size: 2.3rem;
-    line-height: 1.25;
-    margin-bottom: 25px;
-    color: var(--ink-color);
-    font-weight: 600;
+#scene-letter.cooled .letter-paper {
+  background-color: var(--cool-mauve);
 }
 
-.letter-content {
-    font-size: 1.95rem;
-    line-height: 32px; /* Aligned exactly with lines */
-    color: var(--ink-color);
+.letter-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.7rem, 4.6vw, 2.5rem);
+  color: var(--burgundy);
+  line-height: 1.35;
+  margin-bottom: clamp(20px, 4vw, 34px);
+  text-align: center;
 }
 
-.letter-line {
-    opacity: 0;
-    transform: translateY(8px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-    margin-bottom: 12px;
+.letter-body { text-align: left; }
+
+.letter-sentence {
+  font-family: var(--font-hand);
+  font-weight: 400;
+  font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 1.1em;
+  opacity: 0;
+  filter: blur(3px);
+  transform: translateY(6px);
+  transition: opacity 1s ease, filter 1s ease, transform 1s ease, color 1.4s ease;
 }
 
-.letter-line.visible {
-    opacity: 1;
-    transform: translateY(0);
+.letter-sentence.visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
 }
 
-/* Signature */
-.signature-section {
-    margin-top: 35px;
-    text-align: left;
-    padding-left: 40%;
+#scene-letter.cooled .letter-sentence { color: #3d3438; }
+
+.continue-btn {
+  display: block;
+  margin: 28px auto 4px;
+  padding: 12px 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--gold-soft), var(--gold-deep));
+  color: var(--burgundy-deep);
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: .9rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  box-shadow: 0 8px 18px rgba(0,0,0,.2);
+  transition: opacity .8s ease, transform .8s var(--ease-slow);
 }
 
-.yours-text {
-    font-size: 2.1rem;
-    line-height: 32px;
+/* JS adds .show once the letter has finished writing itself (or,
+   in the secret scene, after a short pause) — timing depends on
+   dynamic content length, so this isn't a fixed-delay keyframe. */
+.continue-btn.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.continue-btn.show:hover { transform: translateY(-2px); }
+
+.letter-fx-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.fx-heart, .fx-sparkle, .fx-star {
+  position: absolute;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.fx-heart { animation: fxRise 2.4s ease-out forwards; color: var(--rose-soft); }
+.fx-sparkle { animation: fxTwinkle 1.6s ease-out forwards; }
+.fx-star { animation: fxTwinkle 1.8s ease-out forwards; color: var(--gold-soft); }
+
+.blush-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background: radial-gradient(ellipse at 50% 40%, rgba(217,138,147,.35), transparent 65%);
+  opacity: 0;
+  animation: blushPulse 2.4s ease forwards;
+  pointer-events: none;
+}
+
+.bloom-burst {
+  position: absolute;
+  font-size: 1.6rem;
+  opacity: 0;
+  animation: bloomBurst 2.2s var(--ease-slow) forwards;
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------------
+   11. SCENE 6 — SIGNATURE
+   ---------------------------------------------------------------- */
+#scene-signature { background: var(--cream); }
+
+.signature-paper {
+  position: relative;
+  padding: 40px;
 }
 
 .signature-line {
-    font-size: 2.4rem;
-    font-weight: 700;
-    color: var(--ink-color);
+  font-family: var(--font-hand);
+  font-size: clamp(1.3rem, 3vw, 1.7rem);
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+  opacity: 0;
 }
 
-.interactive-heart {
-    cursor: pointer;
-    display: inline-block;
+.scene.active .signature-line { animation: fadeUp .8s ease forwards; }
+
+.signature-name {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 8vw, 4.2rem);
+  color: var(--burgundy);
+  clip-path: inset(0 100% 0 0);
 }
 
-/* Overlays to match Image Decorative Elements */
-.stamp-badge {
-    position: absolute;
-    top: -15px;
-    left: 15px;
-    width: 60px;
-    height: 75px;
-    background: #fff;
-    border: 2px dashed #b58d88;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.8rem;
-    transform: rotate(-8deg);
-    z-index: 5;
-    box-shadow: 2px 4px 10px rgba(0,0,0,0.3);
+.scene.active .signature-name { animation: writeSignature 2.2s ease forwards .5s; }
+
+.signature-heart {
+  display: block;
+  margin: 22px auto 0;
+  font-size: 1.5rem;
+  opacity: 0;
+  transition: transform .2s ease;
+  filter: drop-shadow(0 2px 6px rgba(58,13,31,.25));
 }
 
-.mini-envelope-badge {
-    position: absolute;
-    top: 20px;
-    right: 120px;
-    width: 60px;
-    height: 42px;
-    background: #8f1922;
-    border-radius: 3px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #f7aab1;
-    font-size: 1.2rem;
-    box-shadow: 2px 4px 8px rgba(0,0,0,0.4);
-    z-index: 5;
+.scene.active .signature-heart { animation: fadeUp .8s ease forwards 2.6s; }
+
+.signature-heart:hover { transform: scale(1.18); }
+.signature-heart.pulse { animation: heartPulse .35s ease; }
+
+/* ----------------------------------------------------------------
+   12. SCENE 7 — SECRET
+   ---------------------------------------------------------------- */
+#scene-secret {
+  background: radial-gradient(ellipse at 50% 30%, var(--blush), var(--rose-soft));
 }
 
-.sketched-heart {
-    position: absolute;
-    top: -25px;
-    right: -10px;
-    width: 120px;
-    height: 120px;
-    transform: rotate(12deg);
-    z-index: 5;
+.secret-content { max-width: 560px; padding: 24px; }
+
+.secret-message {
+  font-family: var(--font-hand);
+  font-weight: 600;
+  font-size: clamp(1.3rem, 3.6vw, 1.9rem);
+  color: var(--burgundy-deep);
+  line-height: 1.6;
+  margin-bottom: 30px;
+  opacity: 0;
 }
 
-.heart-border-right {
-    position: absolute;
-    top: 0;
-    right: -15px;
-    width: 45px;
-    height: 100%;
-    background: repeating-linear-gradient(
-        45deg,
-        #a8202d,
-        #a8202d 15px,
-        #e36b78 15px,
-        #e36b78 30px
-    );
-    z-index: 1;
-    box-shadow: -3px 0 10px rgba(0,0,0,0.3);
+.scene.active .secret-message { animation: fadeUp 1s var(--ease-slow) forwards .2s; }
+
+.polaroid {
+  display: inline-block;
+  background: var(--cream);
+  padding: 14px 14px 34px;
+  border-radius: 3px;
+  box-shadow: 0 18px 34px rgba(58,13,31,.3);
+  transform: rotate(-3deg) scale(.85);
+  opacity: 0;
 }
 
-.dried-rose-overlay {
-    position: absolute;
-    top: 70px;
-    left: -40px;
-    font-size: 7.5rem;
-    z-index: 6;
-    transform: rotate(-15deg);
-    filter: drop-shadow(5px 10px 8px rgba(0,0,0,0.5));
-    pointer-events: none;
-}
+.scene.active .polaroid { animation: polaroidIn 1s var(--ease-slow) forwards 1.1s; }
 
-.binder-clip {
-    position: absolute;
-    bottom: -10px;
-    right: 20px;
-    font-size: 4rem;
-    z-index: 6;
-    transform: rotate(-20deg);
-    filter: drop-shadow(3px 5px 6px rgba(0,0,0,0.5));
-}
-
-/* Ending Scene */
-#ending-scene {
-    background: radial-gradient(ellipse at bottom, #1c2536 0%, #080a12 100%);
-}
-
-.ps-message {
-    font-size: 2.8rem;
-    color: #fce4e6;
-    text-align: center;
-    padding: 0 20px;
-    opacity: 0;
-    transition: opacity 2s ease;
-}
-
-.ps-message.visible { opacity: 1; }
-
-/* Modal */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 200;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s ease;
-}
-
-.modal.open { opacity: 1; pointer-events: auto; }
-
-.polaroid-frame {
-    background: #fff;
-    padding: 15px 15px 25px 15px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-    transform: rotate(-2deg);
-    text-align: center;
-}
-
-.photo-placeholder img {
-    width: 100%;
-    height: 320px;
-    object-fit: cover;
+.polaroid-photo {
+  width: min(56vw, 220px);
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(150deg, var(--blush), var(--rose-soft));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
 }
 
 .polaroid-caption {
-    font-size: 1.8rem;
-    color: var(--ink-color);
-    margin-top: 15px;
+  font-family: var(--font-hand);
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-top: 12px;
 }
 
-.close-modal {
-    position: absolute;
-    top: -40px;
-    right: 0;
-    color: #fff;
-    font-size: 2rem;
-    cursor: pointer;
+/* ----------------------------------------------------------------
+   13. SCENE 8 — ENDING
+   ---------------------------------------------------------------- */
+#scene-ending {
+  background: radial-gradient(ellipse at 50% 20%, #2a0f1c 0%, #170812 70%, #0e0509 100%);
 }
 
-/* Responsiveness */
-@media (max-width: 600px) {
-    .letter-paper { padding: 40px 25px 30px 35px; }
-    .letter-header-handwritten { font-size: 1.8rem; }
-    .letter-content { font-size: 1.55rem; line-height: 28px; }
-    .dried-rose-overlay { font-size: 5rem; left: -20px; }
-    .sketched-heart { width: 80px; }
+.night-sky {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: var(--gold-soft);
+  border-radius: 50%;
+  animation: starTwinkle ease-in-out infinite;
+}
+
+.fireflies { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+
+.firefly {
+  position: absolute;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gold-soft);
+  box-shadow: 0 0 8px 3px rgba(230,201,138,.7);
+  animation: fireflyDrift linear infinite;
+}
+
+.ps-sentence {
+  position: relative;
+  z-index: 3;
+  max-width: 620px;
+  padding: 24px;
+  font-family: var(--font-hand);
+  font-size: clamp(1.15rem, 3.2vw, 1.6rem);
+  color: var(--cream);
+  line-height: 1.7;
+  opacity: 0;
+}
+
+.scene.active .ps-sentence { animation: fadeUp 1.4s var(--ease-slow) forwards 1s; }
+
+.final-petal {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  z-index: 3;
+  font-size: 1.6rem;
+  opacity: 0;
+}
+
+.scene.active .final-petal { animation: finalPetalFall 4s ease-in forwards 2.6s; }
+
+.restart-btn {
+  position: relative;
+  z-index: 3;
+  margin-top: 30px;
+  padding: 10px 24px;
+  border-radius: 999px;
+  border: 1px solid rgba(230,201,138,.4);
+  color: var(--gold-soft);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: .9rem;
+  opacity: 0;
+  transition: background .3s ease, transform .3s ease;
+}
+
+.scene.active .restart-btn { animation: fadeUp 1s ease forwards 4s; }
+
+.restart-btn:hover { background: rgba(230,201,138,.1); transform: translateY(-2px); }
+
+/* ----------------------------------------------------------------
+   14. KEYFRAME ANIMATIONS
+   ---------------------------------------------------------------- */
+@keyframes floatUp {
+  from { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10%  { opacity: .55; }
+  90%  { opacity: .3; }
+  to   { transform: translateY(-110vh) rotate(20deg); opacity: 0; }
+}
+
+@keyframes driftDown {
+  from { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+  10%  { opacity: .8; }
+  100% { transform: translateY(110vh) translateX(var(--drift, 40px)) rotate(200deg); opacity: 0; }
+}
+
+@keyframes flutter {
+  0%   { transform: translate(0,0) scale(1); }
+  25%  { transform: translate(20px,-16px) scale(1.05) rotate(6deg); }
+  50%  { transform: translate(45px, 4px) scale(.95) rotate(-4deg); }
+  75%  { transform: translate(20px, 22px) scale(1.05) rotate(4deg); }
+  100% { transform: translate(0,0) scale(1) rotate(0deg); }
+}
+
+@keyframes bloom {
+  0%   { opacity: 0; transform: scale(.2) translateY(30px); }
+  70%  { opacity: 1; transform: scale(1.08) translateY(-4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shakeInput {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(4px); }
+}
+
+@keyframes inkIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulseNote {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.2); }
+}
+
+@keyframes fxRise {
+  0%   { opacity: 0; transform: translateY(0) scale(.6); }
+  15%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-90px) scale(1.1); }
+}
+
+@keyframes fxTwinkle {
+  0%   { opacity: 0; transform: scale(.3) rotate(0deg); }
+  30%  { opacity: 1; transform: scale(1.1) rotate(45deg); }
+  100% { opacity: 0; transform: scale(.4) rotate(90deg); }
+}
+
+@keyframes blushPulse {
+  0%   { opacity: 0; }
+  35%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes bloomBurst {
+  0%   { opacity: 0; transform: scale(.2) translateY(10px); }
+  40%  { opacity: 1; transform: scale(1.15) translateY(-10px); }
+  100% { opacity: 0; transform: scale(1) translateY(-40px); }
+}
+
+@keyframes writeSignature {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes heartPulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.4); }
+}
+
+@keyframes polaroidIn {
+  from { opacity: 0; transform: rotate(-3deg) scale(.85); }
+  to   { opacity: 1; transform: rotate(-2deg) scale(1); }
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: .2; }
+  50%      { opacity: 1; }
+}
+
+@keyframes fireflyDrift {
+  0%   { transform: translate(0,0); opacity: 0; }
+  10%  { opacity: 1; }
+  50%  { transform: translate(var(--fx,40px), var(--fy,-60px)); }
+  90%  { opacity: 1; }
+  100% { transform: translate(var(--fx2,-30px), var(--fy2,-120px)); opacity: 0; }
+}
+
+@keyframes finalPetalFall {
+  0%   { opacity: 0; transform: translate(-50%, 0) rotate(0deg); }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + 60px), 130vh) rotate(200deg); }
+}
+
+/* ----------------------------------------------------------------
+   15. RESPONSIVE
+   ---------------------------------------------------------------- */
+@media (max-width: 480px) {
+  .password-form { flex-direction: column; align-items: center; }
+  .password-input {
+    flex: 0 0 auto;   /* prevent flex-basis being read as height in column mode */
+    width: 100%;
+    max-width: 280px;
+  }
+  .chapter-dots { right: 12px; }
+  .music-toggle { top: 14px; right: 14px; width: 40px; height: 40px; }
+  .flower-bed { gap: 14px; }
+  .envelope { width: 82vw; }
+}
+
+@media (max-height: 560px) {
+  .letter-paper { max-height: 90vh; padding: 22px; }
+  .cover-title { font-size: clamp(1.8rem, 6vw, 2.6rem); }
+}
+
+/* ----------------------------------------------------------------
+   16. REDUCED MOTION
+   ---------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .2s !important;
+  }
+  .ambient-layer { display: none; }
 }
